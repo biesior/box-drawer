@@ -131,10 +131,6 @@ class BoxDrawer
      */
     public function setStyle($style)
     {
-        $a = $this->ansiTextWarning('a');
-        $b = $this->ansiTextDimmed('b');
-        self::dump($a);
-        self::printer([$b]);
 
         /**
          * Naming key: (need to be fixed!)
