@@ -30,4 +30,4 @@ For more samples refer to `box-drawing-sample-usage.php` and `sample_data` folde
 
 ### Contributors
 - (c) 2020 Marcus Biesioroff biesior@gmail.com
-- (c) 2020 Walter Francisco Núñez Cruz
+- (c) 2020 Walter Francisco Núñez Cruz icarosnet@gmail.com 
