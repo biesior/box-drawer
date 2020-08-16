@@ -96,6 +96,15 @@ class BoxDrawer
      */
     protected $footerLine = null;
 
+    /**
+     * If set to `true` numeric values in tables will be right aligned
+     *
+     * Not applicable for {@see BoxDrawer::drawBoxesForLines()}
+     *
+     * @var bool
+     */
+    protected $rightAlignNumericValues = true;
+
 
     // Special chars
     private $tl, $tw, $ts, $tr;
@@ -246,9 +255,8 @@ class BoxDrawer
     }
 
     /**
-     * - If `true` first line will be underlined (if in style) and highlighted by ANSI color
+     * If `true` first line will be underlined (if in style) and highlighted by ANSI color
      * - default: `false`
-     *
      *
      * @param bool $isFirstLineHeader
      *
@@ -262,7 +270,7 @@ class BoxDrawer
     }
 
     /**
-     * - If set to `true` box will be wrapped with `pre` tag to display in HTML
+     * If set to `true` box will be wrapped with `pre` tag to display in HTML
      * - default: `false`
      *
      * @param bool $renderAsHtml
@@ -292,7 +300,7 @@ class BoxDrawer
     }
 
     /**
-     * - If set to `true` ANSI text colors will be used in the console, need to  be `false` for HTML output <br>
+     * If set to `true` ANSI text colors will be used in the console, need to  be `false` for HTML output <br>
      * - default: `false`
      *
      * @param bool $useAnsiColors
@@ -307,8 +315,8 @@ class BoxDrawer
     }
 
     /**
-     * - Minimum width of the box, for free text. If content is narrower than that empty spaces will be added.
-     * - To be used with styles using some borders and/or ANSI background
+     * Minimum width of the box, for free text. If content is narrower than that empty spaces will be added.
+     * To be used with styles using some borders and/or ANSI background
      * - default: `0`
      *
      * @param int $minimumWidth
@@ -346,6 +354,20 @@ class BoxDrawer
     public function setFooterLine($footerLine)
     {
         $this->footerLine = $footerLine;
+        return $this;
+    }
+
+    /**
+     * If set to `true` numeric values in tables will be right aligned
+     * - default: `true`
+     *
+     * @param bool $rightAlignNumericValues
+     *
+     * @return BoxDrawer
+     */
+    public function setRightAlignNumericValues(bool $rightAlignNumericValues): BoxDrawer
+    {
+        $this->rightAlignNumericValues = $rightAlignNumericValues;
         return $this;
     }
 
@@ -504,7 +526,10 @@ class BoxDrawer
                     $columnSize = $this->columnSizes[$i];
                     $preValue = " $value ";
                     if ($this->stringLength($value) < $columnSize) {
-                        $preValue = $preValue . str_repeat(' ', ($columnSize - $this->stringLength($preValue)) + 2);
+                        $spacesToAdd = str_repeat(' ', ($columnSize - $this->stringLength($preValue)) + 2);
+                        $preValue = ($this->rightAlignNumericValues && is_numeric($value))
+                            ? $spacesToAdd . $preValue
+                            : $preValue . $spacesToAdd;
                     }
                     if ($this->isFirstLineHeader && $outRowI == 0) {
                         $preValue = $this->ansiTextHighlight($preValue);
@@ -648,6 +673,8 @@ class BoxDrawer
             ? "\x1b[0;42m{$text}\x1b[0m"
             : $text;
     }
+
+
 
     /**
      * Wraps text in ANSI color if allowed

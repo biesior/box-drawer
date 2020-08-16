@@ -1,6 +1,7 @@
 <?php
 
 use Vendor\Utility\BoxDrawer;
+
 require_once 'vendor/autoload.php';
 
 require_once 'sample-data/sample-data.php';
