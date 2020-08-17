@@ -8,6 +8,10 @@
 
 This code is in `alpha` state, please use it carefully. Visit the GitHub repository to check if newer `stable` state is available.
 
+### Test branch
+
+This btanch was created just for testing, will be removed soon, don't use its code!
+
 ### Features 
 
 PHP class for creating using [BoxDrawing (Unicode block)](https://en.wikipedia.org/wiki/Box_Drawing_(Unicode_block)) for CLI scripts or HTML (data frame or table).
