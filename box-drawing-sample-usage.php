@@ -21,7 +21,7 @@ function showSampleBoxes1()
 
 function showSampleBoxes2()
 {
-    $fakeRes = require_once 'sample-data/sample-data-fake-res.php';
+    $fakeRes = require 'sample-data/sample-data-fake-res.php';
     $boxDrawer = new BoxDrawer();
     $boxDrawer
         ->setHeaderLine('Basic sample')
@@ -31,7 +31,7 @@ function showSampleBoxes2()
 
 function showSampleBoxes3()
 {
-    $dbData = require_once 'sample-data/sample-data-db-data.php';
+    $dbData = require 'sample-data/sample-data-db-data.php';
     $boxDrawer = new BoxDrawer();
     $boxDrawer
         ->setStyle(BoxDrawer::STYLE_BORDERED)
@@ -42,7 +42,7 @@ function showSampleBoxes3()
 
 function showSampleBoxes4()
 {
-    $multiLineText = require_once 'sample-data/sample-data-multiline-aligned-text.php';
+    $multiLineText = require 'sample-data/sample-data-multiline-aligned-text.php';
     $boxDrawer = new BoxDrawer();
     $boxDrawer
         ->setStyle(BoxDrawer::STYLE_BORDERED)
@@ -50,6 +50,34 @@ function showSampleBoxes4()
         ->setIsFirstLineHeader(false)
         ->setMinimumWidth(72)
         ->drawBoxesForLines($multiLineText);
+}
+
+function showSampleBoxes5()
+{
+    $multiLineText = require 'sample-data/sample-data-multiline-aligned-text.php';
+    $dbData = require 'sample-data/sample-data-db-data.php';
+    $boxDrawer = new BoxDrawer();
+    $boxDrawer
+        ->setStyle(BoxDrawer::STYLE_NO_BORDER)
+        ->setUseAnsiColors(true)
+        ->setIsFirstLineHeader(false)
+        ->setMinimumWidth(74)
+        ->drawBoxesForLines($multiLineText);
+
+    $boxDrawer->reset()
+        ->setStyle(BoxDrawer::STYLE_BORDERED)
+        ->setUseAnsiColors(true)
+        ->setIsFirstLineHeader(true)
+        ->drawBoxesMulticol($dbData);
+
+    $boxDrawer->reset()
+        ->setStyle(BoxDrawer::STYLE_NO_BORDER)
+        ->setUseAnsiColors(true)
+        ->setIsFirstLineHeader(false)
+        ->setMinimumWidth(74)
+        ->drawBoxesForLines('
+ Success! All data saved!
+'); // TODO as Walter suggested auto center would be required here
 }
 
 /**
@@ -139,6 +167,9 @@ function showSampleBoxes($variant)
             case 4:
                 showSampleBoxes4();
                 break;
+            case 5:
+                showSampleBoxes5();
+                break;
 
             case'all':
                 showSampleBoxes1();
@@ -147,6 +178,8 @@ function showSampleBoxes($variant)
                 showSampleBoxes3();
                 echo PHP_EOL;
                 showSampleBoxes4();
+                echo PHP_EOL;
+                showSampleBoxes5();
                 echo PHP_EOL;
                 break;
 
@@ -157,7 +190,8 @@ function showSampleBoxes($variant)
                     Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . '  Basic box with single line of text' . PHP_EOL .
                     Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table with defaults settings for: ' . Ansi::colorize('sample-data/sample-data-fake-res.php', Ansi::FOREGROUND_CYAN) . PHP_EOL .
                     Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table for SQL data with some styling for: ' . Ansi::colorize('sample-data/sample-data-db-data.php', Ansi::FOREGROUND_CYAN) . PHP_EOL .
-                    Ansi::colorize('boxes 4', Ansi::FOREGROUND_GREEN) . TAB . '  Renders text with some alignments: ' . Ansi::colorize('sample-data/sample-data-multiline-aligned-text.php', Ansi::FOREGROUND_CYAN) . PHP_EOL;
+                    Ansi::colorize('boxes 4', Ansi::FOREGROUND_GREEN) . TAB . '  Renders text with some alignments: ' . Ansi::colorize('sample-data/sample-data-multiline-aligned-text.php', Ansi::FOREGROUND_CYAN) . PHP_EOL .
+                    Ansi::colorize('boxes 5', Ansi::FOREGROUND_GREEN) . TAB . '  Renders chained boxes, combines data from samples ' . Ansi::colorize('boxes 3', Ansi::FOREGROUND_CYAN) . ' and ' . Ansi::colorize('boxes 4', Ansi::FOREGROUND_CYAN) . ' and custom text' . PHP_EOL;
                 break;
         }
     }

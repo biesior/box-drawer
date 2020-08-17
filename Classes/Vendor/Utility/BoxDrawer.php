@@ -248,6 +248,7 @@ class BoxDrawer
         }
 
         echo $this->ansiBackgroundHighlight($this->bl . str_repeat($this->tw, $longest + 2) . $this->br) . $preEnd . PHP_EOL;
+        return $this;
     }
 
 
@@ -389,6 +390,8 @@ class BoxDrawer
         echo $preEnd;
 
         self::finalDebug();
+
+        return $this;
     }
 
 
