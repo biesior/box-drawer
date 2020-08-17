@@ -19,6 +19,38 @@ function showSampleBoxes1()
 
 }
 
+function showSampleBoxes2()
+{
+    $fakeRes = require_once 'sample-data/sample-data-fake-res.php';
+    $boxDrawer = new BoxDrawer();
+    $boxDrawer
+        ->setHeaderLine('Basic sample')
+        ->setStyle(BoxDrawer::STYLE_NO_BORDER)
+        ->drawBoxesMulticol($fakeRes);
+}
+
+function showSampleBoxes3()
+{
+    $dbData = require_once 'sample-data/sample-data-db-data.php';
+    $boxDrawer = new BoxDrawer();
+    $boxDrawer
+        ->setStyle(BoxDrawer::STYLE_BORDERED)
+        ->setUseAnsiColors(true)
+        ->setIsFirstLineHeader(true)
+        ->drawBoxesMulticol($dbData);
+}
+
+function showSampleBoxes4()
+{
+    $multiLineText = require_once 'sample-data/sample-data-multiline-aligned-text.php';
+    $boxDrawer = new BoxDrawer();
+    $boxDrawer
+        ->setStyle(BoxDrawer::STYLE_BORDERED)
+        ->setUseAnsiColors(true)
+        ->setIsFirstLineHeader(false)
+        ->setMinimumWidth(72)
+        ->drawBoxesForLines($multiLineText);
+}
 
 /**
  * @return string
@@ -39,7 +71,7 @@ if (getCurrentEnv() == 'cli') {
     }
 } else {
 
-    echo 'INFO: web context is not finished yet for samples!'.PHP_EOL;
+    echo 'INFO: web context is not finished yet for samples!' . PHP_EOL;
     $whatToShow = $_GET['show'] ?? null;
 }
 
@@ -83,8 +115,8 @@ function showHintsForBoxes($env): void
     if (getCurrentEnv() == 'cli') {
         echo PHP_EOL . 'You need to use this script with show param like ' . Ansi::colorize('php box-drawing-sample-usage.php charts', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
             'available options:' . PHP_EOL .
-            Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . 'Samples for drawing boxes' . PHP_EOL .
-            Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . 'Charts with BoxDrawing chcracters' . PHP_EOL .
+            Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . 'Samples for drawing boxes ' . PHP_EOL .
+            Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . 'Charts with BoxDrawing characters' . PHP_EOL .
             Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . 'For showing example how to color your data with ANSI' . PHP_EOL;
 
     }
@@ -98,13 +130,34 @@ function showSampleBoxes($variant)
             case 1:
                 showSampleBoxes1();
                 break;
+            case 2:
+                showSampleBoxes2();
+                break;
+            case 3:
+                showSampleBoxes3();
+                break;
+            case 4:
+                showSampleBoxes4();
+                break;
+
+            case'all':
+                showSampleBoxes1();
+                showSampleBoxes2();
+                echo PHP_EOL;
+                showSampleBoxes3();
+                echo PHP_EOL;
+                showSampleBoxes4();
+                echo PHP_EOL;
+                break;
 
             default:
                 echo PHP_EOL . 'Choose the box sample to display like ' . Ansi::colorize('php box-drawing-sample-usage.php boxes 1', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
                     'available options:' . PHP_EOL .
-                    Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . 'Basic box' . PHP_EOL .
-                    Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . 'charts with BoxDrawing chcracters' . PHP_EOL .
-                    Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . 'for showing example how to color your data with ANSI' . PHP_EOL;
+                    Ansi::colorize('boxes all', Ansi::FOREGROUND_GREEN) . ' For all below' . PHP_EOL .
+                    Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . '  Basic box with single line of text' . PHP_EOL .
+                    Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table with defaults settings for: ' . Ansi::colorize('sample-data/sample-data-fake-res.php', Ansi::FOREGROUND_CYAN) . PHP_EOL .
+                    Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table for SQL data with some styling for: ' . Ansi::colorize('sample-data/sample-data-db-data.php', Ansi::FOREGROUND_CYAN) . PHP_EOL .
+                    Ansi::colorize('boxes 4', Ansi::FOREGROUND_GREEN) . TAB . '  Renders text with some alignments: ' . Ansi::colorize('sample-data/sample-data-multiline-aligned-text.php', Ansi::FOREGROUND_CYAN) . PHP_EOL;
                 break;
         }
     }
@@ -113,8 +166,6 @@ function showSampleBoxes($variant)
     echo PHP_EOL;
 
 }
-
-
 
 
 function showCharts(): void
@@ -183,6 +234,7 @@ function showColoring()
 
 /**
  * TODO extract into separate functions and delete
+ *
  * @param $fakeRes
  */
 function showSampleBoxes999($fakeRes): void
@@ -193,7 +245,7 @@ function showSampleBoxes999($fakeRes): void
 
 //    global $fakeRes;
 
-    $boxDrawer->drawBoxesForLines('Hello world!');
+//    $boxDrawer->drawBoxesForLines('Hello world!');
 
 // Render with no settings
 //$boxDrawer
@@ -232,14 +284,6 @@ function showSampleBoxes999($fakeRes): void
 //    ->setIsFirstLineHeader(true)
 //    ->setRenderHtml(false)
 //    ->drawBoxesForLines($multiLineText);
-
-//$boxDrawer
-//    ->reset()
-//    ->setStyle(BoxDrawer::STYLE_BORDERED)
-//    ->setUseAnsiColors(true)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(false)
-//    ->drawBoxesMulticol($dbData);
 
 
 }

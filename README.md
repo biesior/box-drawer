@@ -1,7 +1,7 @@
 ## `BoxDrawer` class 
 
 [![Donate](https://img.shields.io/static/v1?label=Donate&message=PayPal.me/biesior&color=brightgreen)](https://www.paypal.me/biesior/4.99EUR)
-[![Stable](https://img.shields.io/static/v1?label=alpha&message=0.0.7&color=blue)](https://github.com/biesior/box-drawer/tree/0.0.7-alpha)
+[![Stable](https://img.shields.io/static/v1?label=alpha&message=0.0.8&color=blue)](https://github.com/biesior/box-drawer/tree/0.0.8-alpha)
 [![License](https://img.shields.io/static/v1?label=license&message=GPL-3-or-later&color=yellowgreen)](https://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3)
 
 ### Disclaimer
@@ -29,7 +29,7 @@ and run sample usages like
 php box-drawing-sample-usage.php
 ```
 
-Follow onscreen instructions to select required sampls, you'll see output like:
+Follow onscreen instructions to select required sample, you'll see output like:
 
 ```
 You need to use this script with show param like php box-drawing-sample-usage.php charts

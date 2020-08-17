@@ -63,7 +63,7 @@ $walterData = [
     ['idprocess' => 'c-cron-0007', 'idform' => 'c-cron-0007']
 ];
 
-// TODO change to SQLITE sample with fake data
+
 // --- DB sample START: fetch data from Db as an associative array
 $pdo = new PDO('sqlite:sample-data/box-drawer-example-db.sqlite');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
