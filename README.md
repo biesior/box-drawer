@@ -10,7 +10,7 @@ This code is in `alpha` state, please use it carefully. Visit the GitHub reposit
 
 ### Features 
 
-PHP class for creating using [BoxDrawing (Unicode block)](https://en.wikipedia.org/wiki/Box_Drawing_(Unicode_block)) for CLI scripts or HTML.
+PHP class for creating using [BoxDrawing (Unicode block)](https://en.wikipedia.org/wiki/Box_Drawing_(Unicode_block)) for CLI scripts or HTML (data frame or table).
 
 ### Usage
 
