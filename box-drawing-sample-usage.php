@@ -1,16 +1,199 @@
 <?php
 
+use Vendor\Utility\Ansi;
 use Vendor\Utility\BoxDrawer;
+use Vendor\Utility\BoxDrawerCharts;
 
+const TAB = "\t";
 require_once 'vendor/autoload.php';
+
 
 require_once 'sample-data/sample-data.php';
 
 
-// Crate BoxDrawer instance
-$boxDrawer = new BoxDrawer();
+function showSampleBoxes1()
+{
+    // Crate BoxDrawer instance
+    $boxDrawer = new BoxDrawer();
+    $boxDrawer->drawBoxesForLines('Hello world!');
 
-$boxDrawer->drawBoxesForLines('Hello world!');
+}
+
+
+/**
+ * @return string
+ */
+function getCurrentEnv(): string
+{
+    return (php_sapi_name() == 'cli') ? 'cli' : 'web';
+}
+
+
+$whatToShow = null;
+$variant = null;
+if (getCurrentEnv() == 'cli') {
+    if (count($argv) > 1) {
+        $whatToShow = $argv[1];
+        if (count($argv) > 2)
+            $variant = $argv[2];
+    }
+} else {
+
+    echo 'INFO: web context is not finished yet for samples!'.PHP_EOL;
+    $whatToShow = $_GET['show'] ?? null;
+}
+
+
+switch ($whatToShow) {
+    case 'boxes':
+        showSampleBoxes($variant);
+        break;
+    case 'charts':
+        showCharts();
+        break;
+    case 'colors':
+        showColors($variant);
+        break;
+    case 'data-coloring':
+        showColoring();
+        break;
+    default:
+        showHints();
+        break;
+}
+
+
+function showHints(): void
+{
+    if (getCurrentEnv() == 'cli') {
+        echo PHP_EOL . 'You need to use this script with show param like ' . Ansi::colorize('php box-drawing-sample-usage.php charts', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+            'available options:' . PHP_EOL .
+            Ansi::colorize('boxes', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'samples for drawing boxes' . PHP_EOL .
+            Ansi::colorize('charts', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'charts with BoxDrawing chcracters' . PHP_EOL .
+            Ansi::colorize('colors', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'for showing example how to color your data with ANSI' . PHP_EOL .
+            Ansi::colorize('data-coloring', Ansi::FOREGROUND_GREEN) . TAB . 'BoxDrawer doesn\'t color your data except of first header if set, 
+                you need to do it yourself, you can use i.e. Ansi::colorize() method for this' . PHP_EOL;
+
+    }
+    echo PHP_EOL;
+}
+
+function showHintsForBoxes($env): void
+{
+    if (getCurrentEnv() == 'cli') {
+        echo PHP_EOL . 'You need to use this script with show param like ' . Ansi::colorize('php box-drawing-sample-usage.php charts', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+            'available options:' . PHP_EOL .
+            Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . 'Samples for drawing boxes' . PHP_EOL .
+            Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . 'Charts with BoxDrawing chcracters' . PHP_EOL .
+            Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . 'For showing example how to color your data with ANSI' . PHP_EOL;
+
+    }
+    echo PHP_EOL;
+}
+
+function showSampleBoxes($variant)
+{
+    if (getCurrentEnv() == 'cli') {
+        switch ($variant) {
+            case 1:
+                showSampleBoxes1();
+                break;
+
+            default:
+                echo PHP_EOL . 'Choose the box sample to display like ' . Ansi::colorize('php box-drawing-sample-usage.php boxes 1', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+                    'available options:' . PHP_EOL .
+                    Ansi::colorize('boxes 1', Ansi::FOREGROUND_GREEN) . TAB . 'Basic box' . PHP_EOL .
+                    Ansi::colorize('boxes 2', Ansi::FOREGROUND_GREEN) . TAB . 'charts with BoxDrawing chcracters' . PHP_EOL .
+                    Ansi::colorize('boxes 3', Ansi::FOREGROUND_GREEN) . TAB . 'for showing example how to color your data with ANSI' . PHP_EOL;
+                break;
+        }
+    }
+
+
+    echo PHP_EOL;
+
+}
+
+
+
+
+function showCharts(): void
+{
+//    BoxDrawerCharts::renderAnsiColorsAndEffectsChart();
+    BoxDrawerCharts::renderEntityChart();
+}
+
+function showColors($variant): void
+{
+    switch ($variant) {
+        case 'all':
+        case 'basic':
+        case 'bright':
+        case 'effects':
+            BoxDrawerCharts::renderAnsiColorsAndEffectsChart($variant);
+            break;
+        default:
+            echo PHP_EOL . 'Choose the box sample to display like ' . Ansi::colorize('php box-drawing-sample-usage.php boxes 1', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+                'available options:' . PHP_EOL .
+                Ansi::colorize('colors all', Ansi::FOREGROUND_GREEN) . TAB . 'To display all below' . PHP_EOL .
+                Ansi::colorize('colors basic', Ansi::FOREGROUND_GREEN) . TAB . 'Display basic colors' . PHP_EOL .
+                Ansi::colorize('colors bright', Ansi::FOREGROUND_GREEN) . TAB . 'Display bright colors' . PHP_EOL .
+                Ansi::colorize('colors effects', Ansi::FOREGROUND_GREEN) . TAB . 'Display some effects' . PHP_EOL;
+            break;
+    }
+
+}
+
+
+function showColorsBasic()
+{
+    echo 'Basic colors';
+    echo PHP_EOL;
+}
+
+
+function showColoring()
+{
+    // Coloring content
+    echo Ansi::colorize(
+        'Value to colorize which should be green without additional effects',
+        Ansi::BACKGROUND_GREEN
+    );
+    echo PHP_EOL . PHP_EOL;
+// With single effect as an integer
+    echo Ansi::colorize(
+        'Value to colorize which should be magenta and underlined',
+        Ansi::FOREGROUND_MAGENTA,
+        Ansi::EFFECT_UNDERLINE
+    );
+    echo PHP_EOL . PHP_EOL;
+// for multiple effects use array of integers as a $optionalEffects
+    echo Ansi::colorize(
+        ' Value to colorize which should have red background, faint, italic, underlined and should slowly blink ',
+        Ansi::BACKGROUND_RED,
+        [
+            Ansi::EFFECT_FAINT,
+            Ansi::EFFECT_ITALIC,
+            Ansi::EFFECT_UNDERLINE,
+            Ansi::EFFECT_SLOW_BLINK,
+        ]
+    );
+    echo PHP_EOL . PHP_EOL;
+}
+
+/**
+ * TODO extract into separate functions and delete
+ * @param $fakeRes
+ */
+function showSampleBoxes999($fakeRes): void
+{
+
+    // Crate BoxDrawer instance
+    $boxDrawer = new BoxDrawer();
+
+//    global $fakeRes;
+
+    $boxDrawer->drawBoxesForLines('Hello world!');
 
 // Render with no settings
 //$boxDrawer
@@ -40,19 +223,6 @@ $boxDrawer->drawBoxesForLines('Hello world!');
 //    ->setMinimumWidth(74)
 //    ->drawBoxesForLines($multilineAligned);
 
-//$boxDrawer
-//    ->reset()
-//    ->setStyle(1)
-//    ->setUseAnsiColors(true)
-//    ->setIsFirstLineHeader(true)
-//    ->drawBoxesMulticol($dbData);
-
-//$boxDrawer
-//    ->reset()
-//    ->setStyle(BoxDrawer::STYLE_BORDERED)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(true)
-//    ->drawBoxesForLines($flatData);
 
 // Renders box with multiline text
 //$boxDrawer
@@ -71,41 +241,11 @@ $boxDrawer->drawBoxesForLines('Hello world!');
 //    ->setRenderHtml(false)
 //    ->drawBoxesMulticol($dbData);
 
-//$boxDrawer
-//    ->setStyle(BoxDrawer::STYLE_NO_INLINES)
-//    ->setUseAnsiColors(true)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(false)
-//    ->drawBoxesMulticol($dbData);
 
-//$boxDrawer
-//    ->setStyle(BoxDrawer::STYLE_NO_BORDER)
-//    ->setUseAnsiColors(true)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(false)
-//    ->drawBoxesMulticol($dbData);
-
-//$boxDrawer
-//    ->reset()
-//    ->setStyle(BoxDrawer::STYLE_BORDERED)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderAsHtml(false)
-//    ->drawBoxesMulticol($walterData);
-
-//$boxDrawer
-//    ->setStyle(BoxDrawer::STYLE_NO_INLINES)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(false)
-//    ->drawBoxesMulticol($dbData);
-
-//$boxDrawer
-//    ->setStyle(BoxDrawer::STYLE_NO_BORDER)
-//    ->setUseAnsiColors(true)
-//    ->setIsFirstLineHeader(true)
-//    ->setRenderHtml(false)
-//    ->drawBoxesMulticol($dbData);
+}
 
 
-//$boxDrawer->renderChart();
+
+
 
 

@@ -15,17 +15,44 @@ class BoxDrawer
 {
 
     /**
-     * TODO Add text's soft wrap to keep max width in `drawBoxesForLines()` method (not applicable for `drawBoxesMulticol()`
-     * TODO option for numeric columns to right align like in Excel
      * TODO find better names for `drawBoxesForLines()` and `drawBoxesMulticol()` methods probably something like `renderText()` and `renderArray()`
      */
 
     const STYLE_BORDERED = 1;
     const STYLE_NO_INLINES = 2;
     const STYLE_NO_BORDER = 3;
+
+
 //    const STYLE_ROUNDED = 4; // time consuming to be done later if any...
 
 
+    /**
+     * If `true` some debug will be displayed
+     * - default `false`
+     * - should be always `false` except of development
+     *
+     * @see BoxDrawer::setDebugMode()
+     * @var bool
+     */
+    protected $debugMode = false;
+
+    /**
+     * Set to true to make sure that {@see BoxDrawer::initialDebug()} displays only once
+     *
+     * @var bool
+     *
+     * @internal
+     */
+
+    protected $initialDebugDisplayed = false;
+    /**
+     * Set to true to make sure that {@see BoxDrawer::finalDebug()} displays only once
+     *
+     * @var bool
+     *
+     * @internal
+     */
+    protected $finalDebugDisplayed = false;
 
     /**
      * Predefined style.
@@ -118,6 +145,294 @@ class BoxDrawer
      * @var array
      */
     private $columnSizes = [];
+
+
+    /**
+     * BoxDrawer constructor.
+     */
+    public function __construct()
+    {
+        $this->reset();
+    }
+
+    /**
+     * Self description for _publicMethods
+     *
+     * @return string
+     */
+    private final function _publicMethods(): string
+    {
+        return self::describeMethodItself('_publicMethods');
+    }
+
+
+    /**
+     * Is called in the class constructor.
+     * Resets several things, so there's no need to initialize new object for rendering next boxes.
+     * - column sizes
+     * - minimumWidth
+     * - ANSI color and background
+     * - titleLine and footerLine
+     *
+     * @return $this
+     */
+    public function reset(): BoxDrawer
+    {
+        $this->debugMode = false;
+        $this->initialDebugDisplayed = false;
+        $this->finalDebugDisplayed = false;
+        $this->style = self::STYLE_BORDERED;
+        $this->columnSizes = [];
+        $this->minimumWidth = 0;
+        $this->useAnsiColors = false;
+        $this->useAnsiBackground = false;
+        $this->headerLine = null;
+        return $this;
+    }
+
+    /**
+     * Renders box with array of strings or multiline string
+     *
+     * @param mixed $lines
+     * @param bool  $isFirstLineHeader
+     * @param bool  $wrapInPre
+     */
+    public function drawBoxesForLines($lines, $isFirstLineHeader = false, $wrapInPre = false)
+    {
+
+        self::initialDebug();
+
+        if (!is_array($lines)) {
+            $lines = explode(PHP_EOL, $lines);
+        }
+
+        $longest = 0;
+        foreach ($lines as $line) {
+            $len = BoxDrawer::stringLength($line);
+            if ($len > $longest) {
+                $longest = $len;
+            }
+        }
+
+        if ($longest < $this->minimumWidth) {
+            $longest = $this->minimumWidth;
+        }
+        $preStart = $wrapInPre ? "<pre style='font-family: monospace'>" . PHP_EOL : '';
+        $preEnd = $wrapInPre ? PHP_EOL . "</pre>" : '';
+        echo $preStart;
+        if (!is_null($this->headerLine)) {
+            echo $this->ansiTextHighlight($this->headerLine);
+        }
+
+        echo $this->ansiBackgroundHighlight($this->tl . self::fillToLeft('', $longest + 2, $this->tw) . $this->tr . PHP_EOL);
+        $i = 0;
+        foreach ($lines as $line) {
+            $addEmpty = '';
+
+            $len = BoxDrawer::stringLength($line);
+            if ($len < $longest) {
+                $addEmpty = str_repeat(' ', $longest - $len);
+            }
+            if ($isFirstLineHeader && $i == 0) {
+                $line = $this->ansiTextHighlight($line);
+            }
+
+            echo $this->ansiBackgroundHighlight($this->gv . ' ' . $line . $addEmpty . ' ' . $this->gv);
+
+            if ($this->isFirstLineHeader && $i == 0) {
+                echo $this->ansiBackgroundHighlight(PHP_EOL . $this->cl . str_repeat($this->hs, $longest + 2) . $this->cr . PHP_EOL);
+            } else {
+                echo PHP_EOL;
+            }
+            $i++;
+        }
+
+        echo $this->ansiBackgroundHighlight($this->bl . str_repeat($this->tw, $longest + 2) . $this->br) . $preEnd . PHP_EOL;
+    }
+
+
+    /**
+     * Renders box from associative array (ie. assoc fetch from DB) or flat array
+     *
+     * @param array $rows
+     */
+    public function drawBoxesMulticol(array $rows)
+    {
+
+        self::initialDebug();
+
+        $allRowsIndex = 0;
+
+        $startLine = '';
+        $lines = '';
+        $endLine = '';
+
+        $outRows = [];
+
+        foreach ($rows as $row) {
+
+            $subIndex = 0;
+            foreach ($row as $key => $value) {
+                $this->columnSizes[$subIndex] = 0;
+                if ($this->isAssoc($row)) {
+                    if ($allRowsIndex == 0) {
+                        $outRows[0][] = $key;
+                    }
+                }
+                $subIndex++;
+            }
+            $outRows[] = array_values($row);
+
+
+            $lines = '';
+            foreach ($outRows as $outRow) {
+                $i = 0;
+                foreach ($outRow as $value) {
+                    $valLen = self::stringLength($value);
+                    if ($valLen > $this->columnSizes[$i]) {
+                        $this->columnSizes[$i] = $valLen;
+                    }
+                    $i++;
+                }
+            }
+            $outRowI = 0;
+            foreach ($outRows as $outRow) {
+
+                $lines .= $this->gv;
+
+                if ($outRowI == 0) {
+                    $startLine = $this->tl;
+                    $y = 0;
+                    foreach ($this->columnSizes as $rowsIndex => $columnSize) {
+
+                        $startLine .= self::fillToLeft('', $columnSize + 2, $this->tw);
+                        if ($y < count($this->columnSizes) - 1)
+                            $startLine .= $this->ts;
+                        $y++;
+                    }
+                } elseif ($outRowI == count($outRows) - 1) {
+                    $endLine = $this->bl;
+                    $y = 0;
+                    foreach ($this->columnSizes as $rowsIndex => $columnSize) {
+                        $endLine .= self::fillToLeft('', $columnSize + 2, $this->tw);
+                        if ($y < count($this->columnSizes) - 1)
+                            $endLine .= $this->bs;
+                        $y++;
+                    }
+                } else {
+                    if ($this->style == 3) {
+                        $lines .= '';
+                    }
+                }
+
+
+                $i = 0;
+                foreach ($outRow as $value) {
+                    $columnSize = $this->columnSizes[$i];
+                    $preValue = " $value ";
+                    if (self::stringLength($value) < $columnSize) {
+                        $preValue = ($this->rightAlignNumericValues && is_numeric($value))
+                            ? self::fillToRight($preValue, $columnSize + 2)
+                            : self::fillToLeft($preValue, $columnSize + 2);
+                    }
+                    if ($this->isFirstLineHeader && $outRowI == 0) {
+                        $preValue = $this->ansiTextHighlight($preValue);
+                    }
+                    if ($i < count($this->columnSizes) - 1) {
+                        $preValue = $preValue . $this->bv;
+                    }
+
+                    $lines .= $preValue;
+                    $i++;
+                }
+                $lines .= $this->gv;
+
+                $i = 0;
+                $outRowI++;
+                if ($outRowI < count($outRows)) {
+                    $lines .= $this->eol . $this->cl;
+                    foreach ($this->columnSizes as $columnSize) {
+                        $lines .= self::fillToLeft('', $columnSize + 2, $this->cv);
+                        if ($i < count($this->columnSizes) - 1) {
+                            $lines .= $this->cs;
+                        }
+                        $i++;
+                    }
+                    $lines .= $this->cr;
+                }
+                $lines .= PHP_EOL;
+
+            }
+            $startLine .= $this->tr . PHP_EOL;
+            $endLine .= $this->br . PHP_EOL;
+
+
+            $allRowsIndex++;
+        }
+
+        $preStart = $this->renderAsHtml ? "<pre style='font-family: monospace'>" . PHP_EOL : '';
+        $preEnd = $this->renderAsHtml ? PHP_EOL . "</pre>" . PHP_EOL : '';
+
+
+        echo $preStart;
+
+        if (!is_null($this->headerLine)) {
+            echo $this->ansiTextHighlight($this->headerLine) . PHP_EOL;
+        }
+
+
+        echo ($this->style == 3) ? null : $startLine;
+        echo $lines;
+        echo ($this->style == 3) ? null : $endLine;
+
+
+        echo $preEnd;
+
+        self::finalDebug();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ***************************
+    // *** Setters and getters ***
+    // ***************************
+
+
+    /**
+     * Self description for _settersAndGetters
+     *
+     * @return string
+     */
+    private function _gettersAndSetters(): string
+    {
+        return self::describeMethodItself('_gettersAndSetters');
+    }
+
+    /**
+     * If `true` some debug will be displayed
+     * - default `false`
+     * - should be always `false` except of development
+     *
+     * @see BoxDrawer::$debugMode
+     * @var bool
+     */
+    public function setDebugMode(bool $debugMode): BoxDrawer
+    {
+        $this->debugMode = $debugMode;
+        return $this;
+    }
 
     /**
      * Sets different predefined styles.
@@ -371,247 +686,15 @@ class BoxDrawer
         return $this;
     }
 
-    // --- Public methods
-
     /**
-     * Resets several things, so there's no need to initialize new object for rendering next boxes.
-     * - column sizes
-     * - minimumWidth
-     * - ANSI color and background
-     * - titleLine and footerLine
+     * Self description for _helperMethods
      *
-     * @return $this
+     * @return string
      */
-    public function reset(): BoxDrawer
+    private function _helperMethods(): string
     {
-        $this->columnSizes = [];
-        $this->minimumWidth = 0;
-        $this->useAnsiColors = false;
-        $this->useAnsiBackground = false;
-        $this->headerLine = null;
-        return $this;
+        return self::describeMethodItself('_helperMethods');
     }
-
-    /**
-     * Renders box with array of strings or multiline string
-     *
-     * @param mixed $lines
-     * @param bool  $isFirstLineHeader
-     * @param bool  $wrapInPre
-     */
-    public function drawBoxesForLines($lines, $isFirstLineHeader = false, $wrapInPre = false)
-    {
-        if (!is_array($lines)) {
-            $lines = explode(PHP_EOL, $lines);
-        }
-
-        $longest = 0;
-        foreach ($lines as $line) {
-            $len = $this->stringLength($line);
-            if ($len > $longest) {
-                $longest = $len;
-            }
-        }
-
-        if ($longest < $this->minimumWidth) {
-            $longest = $this->minimumWidth;
-        }
-        $preStart = $wrapInPre ? "<pre style='font-family: monospace'>" . PHP_EOL : '';
-        $preEnd = $wrapInPre ? PHP_EOL . "</pre>" : '';
-        echo $preStart;
-        if (!is_null($this->headerLine)) {
-            echo $this->ansiTextHighlight($this->headerLine);
-        }
-        echo $this->ansiBackgroundHighlight($this->tl . str_repeat($this->tw, $longest + 2) . $this->tr . PHP_EOL);
-        $i = 0;
-        foreach ($lines as $line) {
-            $addEmpty = '';
-
-            $len = $this->stringLength($line);
-            if ($len < $longest) {
-                $addEmpty = str_repeat(' ', $longest - $len);
-            }
-            if ($isFirstLineHeader && $i == 0) {
-                $line = $this->ansiTextHighlight($line);
-            }
-
-            echo $this->ansiBackgroundHighlight($this->gv . ' ' . $line . $addEmpty . ' ' . $this->gv);
-
-            if ($this->isFirstLineHeader && $i == 0) {
-                echo $this->ansiBackgroundHighlight(PHP_EOL . $this->cl . str_repeat($this->hs, $longest + 2) . $this->cr . PHP_EOL);
-            } else {
-                echo PHP_EOL;
-            }
-            $i++;
-        }
-
-        echo $this->ansiBackgroundHighlight($this->bl . str_repeat($this->tw, $longest + 2) . $this->br) . $preEnd . PHP_EOL;
-    }
-
-
-    /**
-     * Renders box from associative array (ie. assoc fetch from DB) or flat array
-     *
-     * @param array $rows
-     */
-    public function drawBoxesMulticol(array $rows)
-    {
-
-        $allRowsIndex = 0;
-
-        $startLine = '';
-        $lines = '';
-        $endLine = '';
-
-        $outRows = [];
-
-        foreach ($rows as $row) {
-
-            $subIndex = 0;
-            foreach ($row as $key => $value) {
-                $this->columnSizes[$subIndex] = 0;
-                if ($this->isAssoc($row)) {
-                    if ($allRowsIndex == 0) {
-                        $outRows[0][] = $key;
-                    }
-                }
-                $subIndex++;
-            }
-            $outRows[] = array_values($row);
-
-
-            $lines = '';
-            foreach ($outRows as $outRow) {
-                $i = 0;
-                foreach ($outRow as $value) {
-                    $valLen = $this->stringLength($value);
-                    if ($valLen > $this->columnSizes[$i]) {
-                        $this->columnSizes[$i] = $valLen;
-                    }
-                    $i++;
-                }
-            }
-            $outRowI = 0;
-            foreach ($outRows as $outRow) {
-
-                $lines .= $this->gv;
-
-                if ($outRowI == 0) {
-                    $startLine = $this->tl;
-                    $y = 0;
-                    foreach ($this->columnSizes as $rowsIndex => $columnSize) {
-                        $startLine .= str_repeat($this->tw, $columnSize + 2);
-                        if ($y < count($this->columnSizes) - 1)
-                            $startLine .= $this->ts;
-                        $y++;
-                    }
-                } elseif ($outRowI == count($outRows) - 1) {
-                    $endLine = $this->bl;
-                    $y = 0;
-                    foreach ($this->columnSizes as $rowsIndex => $columnSize) {
-                        $endLine .= str_repeat($this->tw, $columnSize + 2);
-                        if ($y < count($this->columnSizes) - 1)
-                            $endLine .= $this->bs;
-                        $y++;
-                    }
-                } else {
-                    if ($this->style == 3) {
-                        $lines .= '';
-                    }
-                }
-
-
-                $i = 0;
-                foreach ($outRow as $value) {
-                    $columnSize = $this->columnSizes[$i];
-                    $preValue = " $value ";
-                    if ($this->stringLength($value) < $columnSize) {
-                        $spacesToAdd = str_repeat(' ', ($columnSize - $this->stringLength($preValue)) + 2);
-                        $preValue = ($this->rightAlignNumericValues && is_numeric($value))
-                            ? $spacesToAdd . $preValue
-                            : $preValue . $spacesToAdd;
-                    }
-                    if ($this->isFirstLineHeader && $outRowI == 0) {
-                        $preValue = $this->ansiTextHighlight($preValue);
-                    }
-                    if ($i < count($this->columnSizes) - 1) {
-                        $preValue = $preValue . $this->bv;
-                    }
-
-                    $lines .= $preValue;
-                    $i++;
-                }
-                $lines .= $this->gv;
-
-                $i = 0;
-                $outRowI++;
-                if ($outRowI < count($outRows)) {
-                    $lines .= $this->eol . $this->cl;
-                    foreach ($this->columnSizes as $columnSize) {
-                        $lines .= str_repeat($this->cv, $columnSize + 2);
-                        if ($i < count($this->columnSizes) - 1) {
-                            $lines .= $this->cs;
-                        }
-                        $i++;
-                    }
-                    $lines .= $this->cr;
-                }
-                $lines .= PHP_EOL;
-
-            }
-            $startLine .= $this->tr . PHP_EOL;
-            $endLine .= $this->br . PHP_EOL;
-
-
-            $allRowsIndex++;
-        }
-
-        $preStart = $this->renderAsHtml ? "<pre style='font-family: monospace'>" . PHP_EOL : '';
-        $preEnd = $this->renderAsHtml ? PHP_EOL . "</pre>" . PHP_EOL : '';
-
-
-        echo $preStart;
-
-        if (!is_null($this->headerLine)) {
-            echo $this->ansiTextHighlight($this->headerLine) . PHP_EOL;
-        }
-
-
-        echo ($this->style == 3) ? null : $startLine;
-        echo $lines;
-        echo ($this->style == 3) ? null : $endLine;
-
-
-        echo $preEnd;
-
-
-    }
-
-    /**
-     * Renders list of Box drawing characters for reference with codes of HTML entities.
-     *
-     * @see https://en.wikipedia.org/wiki/Box-drawing_character#Unicode
-     *
-     * @internal for developers only to check what's what if they forgot... again ;p
-     */
-    public function renderChart()
-    {
-        $mains = [250, 251, 252, 253, 254, 255, 256, 257];
-        $subs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
-        echo '<table>';
-        foreach ($mains as $main) {
-            foreach ($subs as $sub) {
-                $code = $main . $sub;
-                echo "
-            <tr>
-                <td><pre>&amp;#x{$code};</pre> </td>
-                <td>&#x{$code};</td>
-            </tr>";
-            }
-        }
-        echo '</table>';
-    }
-
 
     /**
      * Try to determine if an array is associative
@@ -634,12 +717,68 @@ class BoxDrawer
      *
      * @return bool|false|int
      */
-    protected function stringLength($variable, $removeAnsi = true)
+    public static function stringLength($variable, $removeAnsi = true)
     {
         if ($removeAnsi) {
-            $variable = preg_replace('#\\x1b[[][^A-Za-z]*[A-Za-z]#', '', $variable);
+            $variable = preg_replace('#\\e[[][^A-Za-z]*[A-Za-z]#', '', $variable);
         }
         return mb_strlen($variable);
+    }
+
+    /**
+     * TODO improve phpdoc
+     *
+     * @param string  $value
+     * @param integer $minLen
+     *
+     * @param string  $withChar
+     *
+     * @return string
+     */
+    public static function fillToRight($value, int $minLen, string $withChar = ' '): string
+    {
+        $len = self::stringLength($value);
+        if ($len < $minLen) {
+            $diff = $minLen - $len;
+            return (str_repeat($withChar, $diff) . $value);
+        } else {
+            return $value;
+        }
+    }
+
+    /**
+     * * TODO improve phpdoc
+     *
+     * @param string  $value
+     * @param integer $minLen
+     *
+     * @param string  $withChar
+     *
+     * @return string
+     */
+    public static function fillToLeft($value, $minLen, $withChar = ' '): string
+    {
+        $len = self::stringLength($value);
+        if ($len < $minLen) {
+            $diff = $minLen - $len;
+            return ($value . str_repeat($withChar, $diff));
+        } else {
+            return $value;
+        }
+    }
+
+    protected function ansiColor($value, int $code, int $effect, $force = false)
+    {
+        return ($force || $this->useAnsiColors)
+            ? Ansi::colorize($value, $code, $effect)
+            : $value;
+    }
+
+    protected function ansiReset($value, $force = false)
+    {
+        return ($force || $this->useAnsiColors)
+            ? Ansi::reset($value)
+            : $value;
     }
 
     /**
@@ -653,9 +792,21 @@ class BoxDrawer
      */
     protected function ansiTextHighlight($text)
     {
-        return $this->useAnsiColors
-            ? "\x1b[1;32m{$text}\x1b[0m"
-            : $text;
+        return $this->ansiColor($text, Ansi::FOREGROUND_GREEN, ANSI::EFFECT_BOLD);
+    }
+
+    /**
+     * Wraps text in ANSI color if allowed
+     * - blue
+     *
+     * @param string $text
+     *
+     * @return string
+     * @see https://bixense.com/clicolors/
+     */
+    protected function ansiTextValue($text)
+    {
+        return $this->ansiColor($text, Ansi::FOREGROUND_BLUE, Ansi::EFFECT_NORMAL);
     }
 
     /**
@@ -669,11 +820,8 @@ class BoxDrawer
      */
     protected function ansiBackgroundHighlight($text)
     {
-        return $this->useAnsiColors && $this->useAnsiBackground
-            ? "\x1b[0;42m{$text}\x1b[0m"
-            : $text;
+        return $this->ansiColor($text, Ansi::BACKGROUND_GREEN, Ansi::EFFECT_NORMAL);
     }
-
 
 
     /**
@@ -687,14 +835,12 @@ class BoxDrawer
      */
     protected function ansiTextWarning($text)
     {
-        return $this->useAnsiColors
-            ? "\x1b[1;31m{$text}\x1b[0m"
-            : $text;
+        return $this->ansiColor($text, Ansi::FOREGROUND_RED, Ansi::EFFECT_BOLD);
     }
 
     /**
      * Wraps text in ANSI color if allowed
-     * - light gray
+     * - light `0;30` gray
      *
      * @param string $text
      *
@@ -703,9 +849,7 @@ class BoxDrawer
      */
     protected function ansiTextDimmed($text)
     {
-        return $this->useAnsiColors
-            ? "\x1b[0;30m{$text}\x1b[0m"
-            : $text;
+        return $this->ansiColor($text, Ansi::FOREGROUND_WHITE, Ansi::EFFECT_FAINT);
     }
 
     // -- Internal ie. for debugging
@@ -744,9 +888,86 @@ class BoxDrawer
         echo PHP_EOL . '</pre>';
     }
 
+    /**
+     * Displays inline initial debug just for clarity
+     */
+    private function initialDebug()
+    {
+        if ($this->debugMode && !$this->initialDebugDisplayed) {
+            $this->initialDebugDisplayed = true;
+
+            $box = new BoxDrawer();
+            $box
+                ->setStyle(BoxDrawer::STYLE_BORDERED)
+                ->setUseAnsiColors(true)
+                ->setHeaderLine('Initial debug:')
+                ->drawBoxesMulticol([
+                    ['row', 'debug'],
+                    [1, $this->ansiTextValue($this->describeMethodItself('__construct'))],
+                    [2, $this->ansiTextValue($this->_publicMethods())],
+                    [3, $this->ansiTextValue($this->_gettersAndSetters())],
+                    [4, $this->ansiTextValue($this->_helperMethods())],
+                ]);
+        }
+    }
+
+    /**
+     * Displays inline initial debug just for clarity
+     */
+    private function finalDebug()
+    {
+        if ($this->debugMode && !$this->finalDebugDisplayed) {
+            $this->initialDebugDisplayed = true;
+
+            $box = new BoxDrawer();
+            $box
+                ->setStyle(BoxDrawer::STYLE_BORDERED)
+                ->setUseAnsiColors(true)
+                ->setHeaderLine('Final debug:')
+                ->setRightAlignNumericValues(false)
+                ->drawBoxesMulticol([
+                    ['Property', 'Value'],
+                    [$this->ansiTextDimmed('$this->style'), $this->ansiTextValue($this->style)],
+                    [$this->ansiTextDimmed('$this->debugMode'), $this->boolAsString($this->debugMode)],
+                    [$this->ansiTextDimmed('$this->isFirstLineHeader'), $this->boolAsString($this->isFirstLineHeader)],
+                    [$this->ansiTextDimmed('$this->renderAsHtml'), $this->boolAsString($this->renderAsHtml)],
+                    [$this->ansiTextDimmed('$this->useAnsiColors'), $this->boolAsString($this->useAnsiColors)],
+                    [$this->ansiTextDimmed('$this->useAnsiBackground'), $this->boolAsString($this->useAnsiBackground)],
+                    [$this->ansiTextDimmed('$this->minimumWidth'), $this->ansiTextValue($this->minimumWidth)],
+                    [$this->ansiTextDimmed('$this->headerLine'), $this->boolAsString($this->headerLine)],
+                ]);
+        }
+    }
+
+    /**
+     * TODO improve phpdoc
+     *
+     * @param bool
+     * $value
+     *
+     * @return string
+     */
+    private function boolAsString(bool $value): string
+    {
+        return ($value)
+            ? $this->ansiColor('true', 32, 0)
+            : $this->ansiColor('false', 31, 0);
+    }
+
+    /**
+     * TODO improve phpdoc
+     *
+     * @param $methodName
+     *
+     * @return string
+     * @throws \ReflectionException
+     */
+    private function describeMethodItself($methodName)
+    {
+        $r = new \ReflectionMethod(BoxDrawer::class, $methodName);
+        $file = $r->getFileName();
+        $line = $r->getStartLine();
+        return sprintf('%s() starts at %s:%d', $methodName, $file, $line);
+    }
+
 }
-
-
-
-
-
