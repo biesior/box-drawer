@@ -62,6 +62,7 @@ function showSampleBoxes5()
         ->setUseAnsiColors(true)
         ->setIsFirstLineHeader(false)
         ->setMinimumWidth(74)
+        ->setCenterText(true)
         ->drawBoxesForLines($multiLineText);
 
     $boxDrawer->reset()
@@ -75,8 +76,11 @@ function showSampleBoxes5()
         ->setUseAnsiColors(true)
         ->setIsFirstLineHeader(false)
         ->setMinimumWidth(74)
+        ->setCenterText(true)
         ->drawBoxesForLines('
- Success! All data saved!
+Success! All data saved!
+We can drink now!
+Aloha!
 '); // TODO as Walter suggested auto center would be required here
 }
 

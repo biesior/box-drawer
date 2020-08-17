@@ -132,6 +132,17 @@ class BoxDrawer
      */
     protected $rightAlignNumericValues = true;
 
+    /**
+     * If set to `true` text values will be centered
+     * - default `false`
+     *
+     * Not applicable for {@see BoxDrawer::drawBoxesMulticol()}
+     *
+     * @see BoxDrawer::setCenterText()
+     * @var bool
+     */
+    protected $centerText = false;
+
 
     // Special chars
     private $tl, $tw, $ts, $tr;
@@ -187,6 +198,7 @@ class BoxDrawer
         $this->useAnsiColors = false;
         $this->useAnsiBackground = false;
         $this->headerLine = null;
+        $this->centerText = false;
         return $this;
     }
 
@@ -233,11 +245,21 @@ class BoxDrawer
             if ($len < $longest) {
                 $addEmpty = str_repeat(' ', $longest - $len);
             }
+
+            if ($this->centerText) {
+                $line = trim($line);
+            }
+
             if ($isFirstLineHeader && $i == 0) {
                 $line = $this->ansiTextHighlight($line);
             }
 
-            echo $this->ansiBackgroundHighlight($this->gv . ' ' . $line . $addEmpty . ' ' . $this->gv);
+            if ($this->centerText) {
+                $line = self::fillToCenter($line, $longest, ' ');
+            } else {
+                $line = self::fillToLeft($line, $longest, ' ');
+            }
+            echo $this->ansiBackgroundHighlight($this->gv . ' ' . $line . ' ' . $this->gv);
 
             if ($this->isFirstLineHeader && $i == 0) {
                 echo $this->ansiBackgroundHighlight(PHP_EOL . $this->cl . str_repeat($this->hs, $longest + 2) . $this->cr . PHP_EOL);
@@ -690,6 +712,23 @@ class BoxDrawer
     }
 
     /**
+     * If set to `true` text values will be centered
+     * - default `false`
+     *
+     * Not applicable for {@see BoxDrawer::drawBoxesMulticol()}
+     *
+     * @return BoxDrawer
+     * @see BoxDrawer::$centerText
+     * @var bool
+     */
+    public function setCenterText(bool $centerText): BoxDrawer
+    {
+        $this->centerText = $centerText;
+        return $this;
+    }
+
+
+    /**
      * Self description for _helperMethods
      *
      * @return string
@@ -729,6 +768,27 @@ class BoxDrawer
     }
 
     /**
+     * * TODO improve phpdoc
+     *
+     * @param string  $value
+     * @param integer $minLen
+     *
+     * @param string  $withChar
+     *
+     * @return string
+     */
+    public static function fillToLeft($value, $minLen, $withChar = ' '): string
+    {
+        $len = self::stringLength($value);
+        if ($len < $minLen) {
+            $diff = $minLen - $len;
+            return ($value . str_repeat($withChar, $diff));
+        } else {
+            return $value;
+        }
+    }
+
+    /**
      * TODO improve phpdoc
      *
      * @param string  $value
@@ -749,25 +809,11 @@ class BoxDrawer
         }
     }
 
-    /**
-     * * TODO improve phpdoc
-     *
-     * @param string  $value
-     * @param integer $minLen
-     *
-     * @param string  $withChar
-     *
-     * @return string
-     */
-    public static function fillToLeft($value, $minLen, $withChar = ' '): string
+    public static function fillToCenter($value, $minLen, $withChar = ' '): string
     {
-        $len = self::stringLength($value);
-        if ($len < $minLen) {
-            $diff = $minLen - $len;
-            return ($value . str_repeat($withChar, $diff));
-        } else {
-            return $value;
-        }
+        $value = str_pad($value, $minLen, ' ', STR_PAD_BOTH);
+        return $value;
+
     }
 
     protected function ansiColor($value, int $code, int $effect, $force = false)
