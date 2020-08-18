@@ -86,9 +86,9 @@ class BoxDrawerCharts
             . PHP_EOL . PHP_EOL
             . 'Just to remind, you can use ANSI escape chcaracter'
             . PHP_EOL . 'as '
-            . Ansi::colorize(0, 32, '\\x1b')
+            . Ansi::colorize('\\x1b', Ansi::FOREGROUND_GREEN)
             . ' or ' . Ansi::colorize('\\e', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
-            . ' or ' . Ansi::colorize('\033', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
+            . ' or ' . Ansi::colorize('\\033', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
             . ' or ' . Ansi::colorize('chr(27)', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL) . ' in PHP, the choice is yours'
             . PHP_EOL . PHP_EOL . 'see more ' . Ansi::colorize('https://notes.burke.libbey.me/ansi-escape-codes/', Ansi::EFFECT_UNDERLINE)
             . PHP_EOL . PHP_EOL

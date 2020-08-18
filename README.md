@@ -1,7 +1,8 @@
 ## `BoxDrawer` class
 
 [![Donate](https://img.shields.io/static/v1?label=Donate&message=PayPal.me/biesior&color=brightgreen)](https://www.paypal.me/biesior/4.99EUR)
-[![Stable](https://img.shields.io/static/v1?label=alpha&message=0.0.10&color=blue)](https://github.com/biesior/box-drawer/tree/0.0.10-alpha)
+[![State](https://img.shields.io/static/v1?label=alpha&message=0.0.11&color=blue)](https://github.com/biesior/box-drawer/tree/0.0.11-alpha)
+![Updated](https://img.shields.io/static/v1?label=upated&message=2020-08-18+02:16:21&color=lightgray)
 [![License](https://img.shields.io/static/v1?label=license&message=GPL-3-or-later&color=yellowgreen)](https://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3)
 
 ### Disclaimer
