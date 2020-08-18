@@ -1,104 +1,42 @@
 <?php
 
-
 namespace Vendor\Utility;
 
 /**
  * Class BoxDrawerCharts
  *
- * Contains extracted meyhods for showing some tips and charts about BoxDrawing characters and ANSI colors and effects.
+ * Contains extracted meyhods for showing some tips and charts about BoxDrawing characters.
  *
  * @author (c) 2020 Marcus Biesioroff <biesior@gmail.com>
- *         (c) 2020 Walter Francisco Núñez Cruz
- *
+ * @author (c) 2020 Walter Francisco Núñez Cruz <icarosnet@gmail.com>
  */
 class BoxDrawerCharts
 {
     /**
-     * Renders list of Box drawing characters for reference with codes of HTML entities.
-     *
-     * @see https://en.wikipedia.org/wiki/Box-drawing_character#Unicode
-     * @see https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit
-     *
-     * @internal for developers only to check what's what if they forgot... again ;p
-     *
-     * @param bool $asHtml
-     */
-    public static function renderEntityChart($asHtml = false)
-    {
-
-        header("content-type: text/html; charset=UTF-8");
-        $mains = [250, 251, 252, 253, 254, 255, 256, 257];
-        $subs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
-        if ($asHtml) {
-            echo '<table>';
-            foreach ($mains as $main) {
-                foreach ($subs as $sub) {
-                    $code = $main . $sub;
-
-                    echo "
-            <tr>
-                <td><pre>&amp;#x{$code};</pre> </td>
-                <td>&#x{$code};</td>
-            </tr>";
-                }
-            }
-            echo '</table>';
-        } else {
-            $data = [['Char', 'Entity']];
-            foreach ($mains as $main) {
-                foreach ($subs as $sub) {
-                    $code = $main . $sub;
-                    $data[] = [
-                        json_decode('"\u' . $code . '"'),
-                        "&#x{$code};"
-
-                    ];
-
-                }
-            }
-            $box = new BoxDrawer();
-            $box
-                ->setStyle(1)
-                ->setIsFirstLineHeader(true)
-                ->setUseAnsiColors(true)
-                ->drawBoxesMulticol($data);
-        }
-    }
-
-    /**
      * TODO improve phpdoc
-     * @param string $variant
-     *
+     * @param  string       $variant
      * @throws \Exception
      */
     public static function renderAnsiColorsAndEffectsChart($variant = 'all')
     {
         $box = new BoxDrawer();
 
-        echo
-
-            "\e[42m" . '
-                                   
-   ANSI colors and effects chart   
-                                   ' . "\e[0m"
-
-            . PHP_EOL . PHP_EOL
-            . 'Just to remind, you can use ANSI escape chcaracter'
-            . PHP_EOL . 'as '
-            . Ansi::colorize(0, 32, '\\x1b')
-            . ' or ' . Ansi::colorize('\\e', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
-            . ' or ' . Ansi::colorize('\033', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
-            . ' or ' . Ansi::colorize('chr(27)', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL) . ' in PHP, the choice is yours'
-            . PHP_EOL . PHP_EOL . 'see more ' . Ansi::colorize('https://notes.burke.libbey.me/ansi-escape-codes/', Ansi::EFFECT_UNDERLINE)
-            . PHP_EOL . PHP_EOL
-            . 'Basic colors according to '
-            . Ansi::colorize(0, 4, 'https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit') . ' are:'
-            . PHP_EOL;
-
+        echo "\e[42m".'ANSI colors and effects chart'."\e[0m"
+        .PHP_EOL.PHP_EOL
+        .'Just to remind, you can use ANSI escape chcaracter'
+        .PHP_EOL.'as '
+        .Ansi::colorize(0, 32, '\\x1b')
+        .' or '.Ansi::colorize('\\e', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
+        .' or '.Ansi::colorize('\033', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
+        .' or '.Ansi::colorize('chr(27)', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL).' in PHP, the choice is yours'
+        .PHP_EOL.PHP_EOL.'see more '.Ansi::colorize('https://notes.burke.libbey.me/ansi-escape-codes/', Ansi::EFFECT_UNDERLINE)
+        .PHP_EOL.PHP_EOL
+        .'Basic colors according to '
+        .Ansi::colorize(0, 4, 'https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit').' are:'
+            .PHP_EOL;
 
         if (in_array($variant, ['basic', 'all'])) {
-            $data = [];
+            $data   = [];
             $data[] = ['Name', 'foreground', 'background'];
             $header = 'Basic Foreground colors: 30 .. 37 / Background colors: 40 .. 47';
 
@@ -110,16 +48,16 @@ class BoxDrawerCharts
                 ['f' => 34, 'b' => 44, 'name' => 'Blue'],
                 ['f' => 35, 'b' => 45, 'name' => 'Magenta'],
                 ['f' => 36, 'b' => 46, 'name' => 'Cyan'],
-                ['f' => 37, 'b' => 47, 'name' => 'White'],
+                ['f' => 37, 'b' => 47, 'name' => 'White']
             ];
             foreach ($colors as $color) {
-                $name = BoxDrawer::fillToLeft($color['name'], 16);
-                $fore = $color['f'];
-                $back = $color['b'];
+                $name   = BoxDrawer::fillToLeft($color['name'], 16);
+                $fore   = $color['f'];
+                $back   = $color['b'];
                 $data[] = [
                     sprintf("\e[0;%sm%s\e[0m", $fore, $name),
                     "\e[{$fore}m\\e[{$fore}m\e[0m \e[0;37mor \e[0;{$fore}m\\e[0;{$fore}m\e[0m \e[0;37mor \e[1;{$fore}m\\e[1;{$fore}m\e[0m",
-                    "\e[{$back}m \\e[{$back}m \e[0m \e[0;37mor \e[0;{$back}m \\e[0;{$back}m \e[0m \e[0;37mor \e[1;{$back}m \\e[1;{$back}m \e[0m" . '  ',
+                    "\e[{$back}m \\e[{$back}m \e[0m \e[0;37mor \e[0;{$back}m \\e[0;{$back}m \e[0m \e[0;37mor \e[1;{$back}m \\e[1;{$back}m \e[0m".'  '
 
                 ];
             }
@@ -128,11 +66,11 @@ class BoxDrawerCharts
                 ->setStyle(BoxDrawer::STYLE_BORDERED)
                 ->setUseAnsiColors(true)
                 ->setUseAnsiBackground(false)
-                ->setHeaderLine(PHP_EOL . $header . PHP_EOL)
+                ->setHeaderLine(PHP_EOL.$header.PHP_EOL)
                 ->drawBoxesMulticol($data);
         }
         if (in_array($variant, ['bright', 'all'])) {
-            $data = [];
+            $data   = [];
             $data[] = ['Name', 'foreground', 'background'];
             $header = 'Bright Foreground colors: 90 .. 97 / Background colors: 100 .. 107';
 
@@ -144,16 +82,16 @@ class BoxDrawerCharts
                 ['f' => 94, 'b' => 104, 'name' => 'Bright Blue'],
                 ['f' => 95, 'b' => 105, 'name' => 'Bright Magenta'],
                 ['f' => 96, 'b' => 106, 'name' => 'Bright Cyan'],
-                ['f' => 97, 'b' => 107, 'name' => 'Bright White'],
+                ['f' => 97, 'b' => 107, 'name' => 'Bright White']
             ];
             foreach ($colors as $color) {
-                $name = BoxDrawer::fillToLeft($color['name'], 16);
-                $fore = $color['f'];
-                $back = $color['b'];
+                $name   = BoxDrawer::fillToLeft($color['name'], 16);
+                $fore   = $color['f'];
+                $back   = $color['b'];
                 $data[] = [
                     sprintf("\e[0;%sm%s\e[0m", $fore, $name),
                     "\e[{$fore}m\\e[{$fore}m\e[0m \e[0;37mor \e[0;{$fore}m\\e[0;{$fore}m\e[0m \e[0;37mor \e[1;{$fore}m\\e[1;{$fore}m\e[0m",
-                    "\e[{$back}m \\e[{$back}m \e[0m \e[0;37mor \e[0;{$back}m \\e[0;{$back}m \e[0m \e[0;37mor \e[1;{$back}m \\e[1;{$back}m \e[0m" . '  ',
+                    "\e[{$back}m \\e[{$back}m \e[0m \e[0;37mor \e[0;{$back}m \\e[0;{$back}m \e[0m \e[0;37mor \e[1;{$back}m \\e[1;{$back}m \e[0m".'  '
                 ];
             }
 
@@ -161,16 +99,16 @@ class BoxDrawerCharts
                 ->setStyle(BoxDrawer::STYLE_BORDERED)
                 ->setUseAnsiColors(true)
                 ->setUseAnsiBackground(false)
-                ->setHeaderLine(PHP_EOL . $header . PHP_EOL)
+                ->setHeaderLine(PHP_EOL.$header.PHP_EOL)
                 ->drawBoxesMulticol($data);
 
         }
         if (in_array($variant, ['effects', 'all'])) {
-            $data = [];
+            $data   = [];
             $data[] = ['Code', 'Name', 'Entity', 'Sample', 'Combined with red color', 'or with green, etc...'];
-            $header = 'Preview for some effects' . PHP_EOL .
-                'Note, that effects may be different or don\'t work at all depending on the used terminal' . PHP_EOL . PHP_EOL .
-                'For more details visit: ' . Ansi::colorize(0, 4, 'https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters');
+            $header = 'Preview for some effects'.PHP_EOL.
+            'Note, that effects may be different or don\'t work at all depending on the used terminal'.PHP_EOL.PHP_EOL.
+            'For more details visit: '.Ansi::colorize(0, 4, 'https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters');
 
             $colors = [
                 ['code' => 0, 'name' => 'Reset / Normal '],
@@ -202,7 +140,7 @@ class BoxDrawerCharts
                 ['code' => 26, 'name' => 'Proportional spacing'],
                 ['code' => 27, 'name' => 'Reverse/invert off'],
                 ['code' => 28, 'name' => 'Reveal'],
-                ['code' => 29, 'name' => 'Not crossed out'],
+                ['code' => 29, 'name' => 'Not crossed out']
 //            ['code' => , 'name' => 'Effect '],
 
             ];
@@ -216,7 +154,7 @@ class BoxDrawerCharts
                     "\\e[{$code}m",
                     "\e[{$code}mText with code \\e[{$code}m\e[0m",
                     "\e[{$code};31mText with code \\e[{$code};31m\e[0m",
-                    "\e[{$code};32mText with code \\e[{$code};32m\e[0m",
+                    "\e[{$code};32mText with code \\e[{$code};32m\e[0m"
                 ];
             }
 
@@ -224,11 +162,60 @@ class BoxDrawerCharts
                 ->setStyle(BoxDrawer::STYLE_BORDERED)
                 ->setUseAnsiColors(true)
                 ->setUseAnsiBackground(false)
-                ->setHeaderLine(PHP_EOL . $header . PHP_EOL)
+                ->setHeaderLine(PHP_EOL.$header.PHP_EOL)
                 ->drawBoxesMulticol($data);
 
         }
     }
 
+    /**
+     * Renders list of Box drawing characters for reference with codes of HTML entities.
+     *
+     * @internal for developers only to check what's what if they forgot... again ;p
+     * @see https://en.wikipedia.org/wiki/Box-drawing_character#Unicode
+     * @see https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit
+     *
+     * @param bool $asHtml
+     */
+    public static function renderEntityChart($asHtml = false)
+    {
 
+        header("content-type: text/html; charset=UTF-8");
+        $mains = [250, 251, 252, 253, 254, 255, 256, 257];
+        $subs  = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'];
+        if ($asHtml) {
+            echo '<table>';
+            foreach ($mains as $main) {
+                foreach ($subs as $sub) {
+                    $code = $main.$sub;
+
+                    echo "
+            <tr>
+                <td><pre>&amp;#x{$code};</pre> </td>
+                <td>&#x{$code};</td>
+            </tr>";
+                }
+            }
+            echo '</table>';
+        } else {
+            $data = [['Char', 'Entity']];
+            foreach ($mains as $main) {
+                foreach ($subs as $sub) {
+                    $code   = $main.$sub;
+                    $data[] = [
+                        json_decode('"\u'.$code.'"'),
+                        "&#x{$code};"
+
+                    ];
+
+                }
+            }
+            $box = new BoxDrawer();
+            $box
+            ->setStyle(1)
+                ->setIsFirstLineHeader(true)
+                ->setUseAnsiColors(true)
+                ->drawBoxesMulticol($data);
+        }
+    }
 }
