@@ -5,8 +5,8 @@ namespace Vendor\Utility;
 /**
  * Class BoxDrawer
  *
- *         (c) 2020 Walter Francisco Núñez Cruz
  * @author (c) 2020 Marcus Biesioroff <biesior@gmail.com>
+ * @author (c) 2020 Walter Francisco Núñez Cruz <icarosnet@gmail.com>
  *
  * @see https://en.wikipedia.org/wiki/Box-drawing_character#Unicode
  */
@@ -758,9 +758,7 @@ class BoxDrawer
 
     protected function ansiReset($value, $force = false)
     {
-        return ($force || $this->useAnsiColors)
-            ? Ansi::reset($value)
-            : $value;
+        return ($force || $this->useAnsiColors) ? Ansi::reset($value) : $value;
     }
 
     /**
