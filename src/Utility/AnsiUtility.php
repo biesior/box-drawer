@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace BiesiorNunezTeam\BoxDrawer;
+namespace BiesiorNunezTeam\BoxDrawer\Utility;
 
 use Exception;
 
@@ -20,7 +20,7 @@ use Exception;
  * @author (c) 2020 Walter Francisco Núñez Cruz <icarosnet@gmail.com>
  */
 
-class Ansi
+class AnsiUtility
 {
 
     # Some default effects

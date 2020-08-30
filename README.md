@@ -2,7 +2,7 @@
 
 [![Donate](https://img.shields.io/static/v1?label=Donate&message=paypal.me/biesior&color=brightgreen)](https://www.paypal.me/biesior/4.99EUR)
 [![Donate](https://img.shields.io/static/v1?label=Donate&message=paypal.me/wnunez86&color=brightgreen)](https://www.paypal.me/wnunez86/4.99USD)
-[![State](https://img.shields.io/static/v1?label=candidate&message=1.0.0-rc1&color=blue 'Latest known version')](https://github.com/biesior/box-drawer/tree/v1.0.0-rc1) <!-- __SEMANTIC_VERSION_LINE__ -->
+[![State](https://img.shields.io/static/v1?label=candidate&message=1.0.0-rc2&color=blue 'Latest known version')](https://github.com/biesior/box-drawer/tree/v1.0.0-rc2) <!-- __SEMANTIC_VERSION_LINE__ -->
 ![Updated](https://img.shields.io/static/v1?label=upated&message=2020-08-30+19:48:50&color=lightgray 'Latest known update date') <!-- __SEMANTIC_UPDATED_LINE__ -->
 [![License](https://img.shields.io/static/v1?label=license&message=GPL-3-or-later&color=yellowgreen)](https://en.wikipedia.org/wiki/GNU_General_Public_License#Version_3)
 

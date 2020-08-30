@@ -5,6 +5,7 @@
 declare(strict_types=1);
 
 use BiesiorNunezTeam\BoxDrawer\BoxDrawer;
+use BiesiorNunezTeam\BoxDrawer\Utility\{AnsiUtility, ChartUtility};
 
 const TAB = "\t";
 const SELF_SCRIPT = "php public/sample-usage.php";
@@ -132,12 +133,12 @@ switch ($whatToShow) {
 function showHints()
 {
     if (getCurrentEnv() == 'cli') {
-        echo PHP_EOL . 'You need to use this script with param(s) run the help for more info ' . Ansi::colorize(SELF_SCRIPT . ' help', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+        echo PHP_EOL . 'You need to use this script with param(s) run the help for more info ' . AnsiUtility::colorize(SELF_SCRIPT . ' help', AnsiUtility::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
             'Available options:' . PHP_EOL . PHP_EOL .
-            Ansi::colorize(SELF_SCRIPT . ' boxes', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'Samples for drawing boxes' . PHP_EOL . PHP_EOL .
-            Ansi::colorize(SELF_SCRIPT . ' charts', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'Charts with BoxDrawing chcracters' . PHP_EOL . PHP_EOL .
-            Ansi::colorize(SELF_SCRIPT . ' colors', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'For showing example how to color your data with ANSI' . PHP_EOL . PHP_EOL .
-            Ansi::colorize(SELF_SCRIPT . ' data-coloring', Ansi::FOREGROUND_GREEN) . TAB . 'BoxDrawer class doesn\'t color your data except of first header if set,
+            AnsiUtility::colorize(SELF_SCRIPT . ' boxes', AnsiUtility::FOREGROUND_GREEN) . TAB . TAB . 'Samples for drawing boxes' . PHP_EOL . PHP_EOL .
+            AnsiUtility::colorize(SELF_SCRIPT . ' charts', AnsiUtility::FOREGROUND_GREEN) . TAB . TAB . 'Charts with BoxDrawing chcracters' . PHP_EOL . PHP_EOL .
+            AnsiUtility::colorize(SELF_SCRIPT . ' colors', AnsiUtility::FOREGROUND_GREEN) . TAB . TAB . 'For showing example how to color your data with ANSI' . PHP_EOL . PHP_EOL .
+            AnsiUtility::colorize(SELF_SCRIPT . ' data-coloring', AnsiUtility::FOREGROUND_GREEN) . TAB . 'BoxDrawer class doesn\'t color your data except of first header if set,
                                                 you need to do it yourself, you can use i.e. Ansi::colorize() method.' . PHP_EOL;
 
     }
@@ -178,14 +179,14 @@ function showSampleBoxes($variant)
                 break;
 
             default:
-                echo PHP_EOL . 'Choose detailed info for boxes i.e.  ' . Ansi::colorize(SELF_SCRIPT . ' boxes 1', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+                echo PHP_EOL . 'Choose detailed info for boxes i.e.  ' . AnsiUtility::colorize(SELF_SCRIPT . ' boxes 1', AnsiUtility::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
                     'Available options:' . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes all', Ansi::FOREGROUND_GREEN) . TAB . '  For all below' . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes 1', Ansi::FOREGROUND_GREEN) . TAB . '  Basic box with single line of text' . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes 2', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table with defaults settings for: ' . Ansi::colorize('resources/sample-data-fake-res.php', Ansi::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes 3', Ansi::FOREGROUND_GREEN) . TAB . '  Renders table for SQL data with some styling for: ' . Ansi::colorize('resources/sample-data-db-data.php', Ansi::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes 4', Ansi::FOREGROUND_GREEN) . TAB . '  Renders text with some alignments: ' . Ansi::colorize('resources/sample-data-multiline-aligned-text.php', Ansi::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
-                    Ansi::colorize(SELF_SCRIPT . ' boxes 5', Ansi::FOREGROUND_GREEN) . TAB . '  Renders chained boxes, combines data from samples ' . Ansi::colorize('boxes 3', Ansi::FOREGROUND_CYAN) . ' and ' . Ansi::colorize('boxes 4', Ansi::FOREGROUND_CYAN) . ' and custom text' . PHP_EOL;
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes all', AnsiUtility::FOREGROUND_GREEN) . TAB . '  For all below' . PHP_EOL . PHP_EOL .
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes 1', AnsiUtility::FOREGROUND_GREEN) . TAB . '  Basic box with single line of text' . PHP_EOL . PHP_EOL .
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes 2', AnsiUtility::FOREGROUND_GREEN) . TAB . '  Renders table with defaults settings for: ' . AnsiUtility::colorize('resources/sample-data-fake-res.php', AnsiUtility::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes 3', AnsiUtility::FOREGROUND_GREEN) . TAB . '  Renders table for SQL data with some styling for: ' . AnsiUtility::colorize('resources/sample-data-db-data.php', AnsiUtility::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes 4', AnsiUtility::FOREGROUND_GREEN) . TAB . '  Renders text with some alignments: ' . AnsiUtility::colorize('resources/sample-data-multiline-aligned-text.php', AnsiUtility::FOREGROUND_CYAN) . PHP_EOL . PHP_EOL .
+                    AnsiUtility::colorize(SELF_SCRIPT . ' boxes 5', AnsiUtility::FOREGROUND_GREEN) . TAB . '  Renders chained boxes, combines data from samples ' . AnsiUtility::colorize('boxes 3', AnsiUtility::FOREGROUND_CYAN) . ' and ' . AnsiUtility::colorize('boxes 4', AnsiUtility::FOREGROUND_CYAN) . ' and custom text' . PHP_EOL;
                 break;
         }
     }
@@ -197,7 +198,7 @@ function showSampleBoxes($variant)
 function showCharts()
 {
 //    BoxDrawerCharts::renderAnsiColorsAndEffectsChart();
-    BoxDrawerCharts::renderEntityChart();
+    ChartUtility::renderEntityChart();
 }
 
 function showColors($variant)
@@ -207,15 +208,15 @@ function showColors($variant)
         case 'basic':
         case 'bright':
         case 'effects':
-            BoxDrawerCharts::renderAnsiColorsAndEffectsChart($variant);
+            ChartUtility::renderAnsiColorsAndEffectsChart($variant);
             break;
         default:
-            echo PHP_EOL . 'Choose detailed info for colors i.e. ' . Ansi::colorize(SELF_SCRIPT . ' colors basic', Ansi::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
+            echo PHP_EOL . 'Choose detailed info for colors i.e. ' . AnsiUtility::colorize(SELF_SCRIPT . ' colors basic', AnsiUtility::FOREGROUND_GREEN) . PHP_EOL . PHP_EOL,
                 'available options:' . PHP_EOL .
-                Ansi::colorize(SELF_SCRIPT . ' colors all', Ansi::FOREGROUND_GREEN) . TAB . TAB . 'To display all below' . PHP_EOL .
-                Ansi::colorize(SELF_SCRIPT . ' colors basic', Ansi::FOREGROUND_GREEN) . TAB . 'Display basic colors' . PHP_EOL .
-                Ansi::colorize(SELF_SCRIPT . ' colors bright', Ansi::FOREGROUND_GREEN) . TAB . 'Display bright colors' . PHP_EOL .
-                Ansi::colorize(SELF_SCRIPT . ' colors effects', Ansi::FOREGROUND_GREEN) . TAB . 'Display some effects' . PHP_EOL;
+                AnsiUtility::colorize(SELF_SCRIPT . ' colors all', AnsiUtility::FOREGROUND_GREEN) . TAB . TAB . 'To display all below' . PHP_EOL .
+                AnsiUtility::colorize(SELF_SCRIPT . ' colors basic', AnsiUtility::FOREGROUND_GREEN) . TAB . 'Display basic colors' . PHP_EOL .
+                AnsiUtility::colorize(SELF_SCRIPT . ' colors bright', AnsiUtility::FOREGROUND_GREEN) . TAB . 'Display bright colors' . PHP_EOL .
+                AnsiUtility::colorize(SELF_SCRIPT . ' colors effects', AnsiUtility::FOREGROUND_GREEN) . TAB . 'Display some effects' . PHP_EOL;
             break;
     }
 
@@ -225,27 +226,27 @@ function showColors($variant)
 function showColoring()
 {
     // Coloring content
-    echo Ansi::colorize(
+    echo AnsiUtility::colorize(
         'Value to colorize which should be green without additional effects',
-        Ansi::BACKGROUND_GREEN
+        AnsiUtility::BACKGROUND_GREEN
     );
     echo PHP_EOL . PHP_EOL;
 // With single effect as an integer
-    echo Ansi::colorize(
+    echo AnsiUtility::colorize(
         'Value to colorize which should be magenta and underlined',
-        Ansi::FOREGROUND_MAGENTA,
-        Ansi::EFFECT_UNDERLINE
+        AnsiUtility::FOREGROUND_MAGENTA,
+        AnsiUtility::EFFECT_UNDERLINE
     );
     echo PHP_EOL . PHP_EOL;
 // for multiple effects use array of integers as a $optionalEffects
-    echo Ansi::colorize(
+    echo AnsiUtility::colorize(
         ' Value to colorize which should have red background, faint, italic, underlined and should slowly blink ',
-        Ansi::BACKGROUND_RED,
+        AnsiUtility::BACKGROUND_RED,
         [
-            Ansi::EFFECT_FAINT,
-            Ansi::EFFECT_ITALIC,
-            Ansi::EFFECT_UNDERLINE,
-            Ansi::EFFECT_SLOW_BLINK
+            AnsiUtility::EFFECT_FAINT,
+            AnsiUtility::EFFECT_ITALIC,
+            AnsiUtility::EFFECT_UNDERLINE,
+            AnsiUtility::EFFECT_SLOW_BLINK
         ]
     );
     echo PHP_EOL . PHP_EOL;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace BiesiorNunezTeam\BoxDrawer;
+namespace BiesiorNunezTeam\BoxDrawer\Utility;
 
 use Exception;
 
@@ -13,7 +13,7 @@ use Exception;
  * @author (c) 2020 Marcus Biesioroff <biesior@gmail.com>
  * @author (c) 2020 Walter Francisco Núñez Cruz <icarosnet@gmail.com>
  */
-class Charts
+class ChartUtility
 {
     /**
      * Renders charts for colors/effects
@@ -30,14 +30,14 @@ class Charts
             . PHP_EOL . PHP_EOL
             . 'Just to remind, you can use ANSI escape chcaracter'
             . PHP_EOL . 'as '
-            . Ansi::colorize('\\x1b', Ansi::FOREGROUND_GREEN)
-            . ' or ' . Ansi::colorize('\\e', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
-            . ' or ' . Ansi::colorize('\\033', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL)
-            . ' or ' . Ansi::colorize('chr(27)', Ansi::FOREGROUND_GREEN, Ansi::EFFECT_NORMAL) . ' in PHP, the choice is yours'
-            . PHP_EOL . PHP_EOL . 'see more ' . Ansi::colorize('https://notes.burke.libbey.me/ansi-escape-codes/', Ansi::EFFECT_UNDERLINE)
+            . AnsiUtility::colorize('\\x1b', AnsiUtility::FOREGROUND_GREEN)
+            . ' or ' . AnsiUtility::colorize('\\e', AnsiUtility::FOREGROUND_GREEN, AnsiUtility::EFFECT_NORMAL)
+            . ' or ' . AnsiUtility::colorize('\\033', AnsiUtility::FOREGROUND_GREEN, AnsiUtility::EFFECT_NORMAL)
+            . ' or ' . AnsiUtility::colorize('chr(27)', AnsiUtility::FOREGROUND_GREEN, AnsiUtility::EFFECT_NORMAL) . ' in PHP, the choice is yours'
+            . PHP_EOL . PHP_EOL . 'see more ' . AnsiUtility::colorize('https://notes.burke.libbey.me/ansi-escape-codes/', AnsiUtility::EFFECT_UNDERLINE)
             . PHP_EOL . PHP_EOL
             . 'Basic colors according to '
-            . Ansi::colorize('https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit', Ansi::FOREGROUND_GREEN) . ' are:'
+            . AnsiUtility::colorize('https://en.wikipedia.org/wiki/ANSI_escape_code#3/4_bit', AnsiUtility::FOREGROUND_GREEN) . ' are:'
             . PHP_EOL;
 
         if (in_array($variant, ['basic', 'all'])) {
@@ -113,7 +113,7 @@ class Charts
             $data[] = ['Code', 'Name', 'Entity', 'Sample', 'Combined with red color', 'or with green, etc...'];
             $header = 'Preview for some effects' . PHP_EOL .
                 'Note, that effects may be different or don\'t work at all depending on the used terminal' . PHP_EOL . PHP_EOL .
-                'For more details visit: ' . Ansi::colorize('https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters', Ansi::FOREGROUND_GREEN);
+                'For more details visit: ' . AnsiUtility::colorize('https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_parameters', AnsiUtility::FOREGROUND_GREEN);
 
             $colors = [
                 ['code' => 0, 'name' => 'Reset / Normal '],

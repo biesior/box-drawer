@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace BiesiorNunezTeam\BoxDrawer;
 
+use BiesiorNunezTeam\BoxDrawer\Utility\AnsiUtility;
 use ReflectionException;
 
 /**
@@ -820,7 +821,7 @@ class BoxDrawer
      */
     protected function ansiBackgroundHighlight($text)
     {
-        return $this->ansiColor($text, Ansi::BACKGROUND_GREEN, Ansi::EFFECT_NORMAL);
+        return $this->ansiColor($text, AnsiUtility::BACKGROUND_GREEN, AnsiUtility::EFFECT_NORMAL);
     }
 
 
@@ -836,7 +837,7 @@ class BoxDrawer
      */
     protected function ansiTextDimmed($text)
     {
-        return $this->ansiColor($text, Ansi::FOREGROUND_WHITE, Ansi::EFFECT_FAINT);
+        return $this->ansiColor($text, AnsiUtility::FOREGROUND_WHITE, AnsiUtility::EFFECT_FAINT);
     }
 
     /**
@@ -851,7 +852,7 @@ class BoxDrawer
      */
     protected function ansiTextHighlight($text)
     {
-        return $this->ansiColor($text, Ansi::FOREGROUND_GREEN, ANSI::EFFECT_BOLD);
+        return $this->ansiColor($text, AnsiUtility::FOREGROUND_GREEN, AnsiUtility::EFFECT_BOLD);
     }
 
     /**
@@ -866,7 +867,7 @@ class BoxDrawer
      */
     protected function ansiTextValue($text)
     {
-        return $this->ansiColor($text, Ansi::FOREGROUND_BLUE, Ansi::EFFECT_NORMAL);
+        return $this->ansiColor($text, AnsiUtility::FOREGROUND_BLUE, AnsiUtility::EFFECT_NORMAL);
     }
 
     /**
@@ -882,7 +883,7 @@ class BoxDrawer
      */
     protected function ansiTextWarning($text)
     {
-        return $this->ansiColor($text, Ansi::FOREGROUND_RED, Ansi::EFFECT_BOLD);
+        return $this->ansiColor($text, AnsiUtility::FOREGROUND_RED, AnsiUtility::EFFECT_BOLD);
     }
 
     /**
@@ -903,7 +904,7 @@ class BoxDrawer
 
         /** @noinspection PhpUnhandledExceptionInspection */
         return ($force || $this->useAnsiColors)
-            ? Ansi::colorize($value, $code, $effect)
+            ? AnsiUtility::colorize($value, $code, $effect)
             : $value;
     }
 
@@ -918,7 +919,7 @@ class BoxDrawer
      */
     protected function ansiReset($value, $force = false)
     {
-        return ($force || $this->useAnsiColors) ? Ansi::reset($value) : $value;
+        return ($force || $this->useAnsiColors) ? AnsiUtility::reset($value) : $value;
     }
 
     /**
