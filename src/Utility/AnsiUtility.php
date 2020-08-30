@@ -1,6 +1,15 @@
 <?php
 
-namespace Vendor\Utility;
+// For IDE, Important these disabled inspections should be checked before releasing MINOR or MAJOR versions!
+/** @noinspection PhpDocMissingThrowsInspection */
+/** @noinspection PhpUnhandledExceptionInspection */
+/** @noinspection PhpUnused */
+
+declare(strict_types=1);
+
+namespace BiesiorNunezTeam\BoxDrawer\Utility;
+
+use Exception;
 
 /**
  * Class Ansi
@@ -11,101 +20,65 @@ namespace Vendor\Utility;
  * @author (c) 2020 Walter Francisco Núñez Cruz <icarosnet@gmail.com>
  */
 
-class Ansi
+class AnsiUtility
 {
-    // Foreground colors set 1
-    // Background colors set 1
-    // Foreground colors set 2
-    // Background colors set 2
 
-    const BACKGROUND_BLACK = 40;
-
-    const BACKGROUND_BLUE = 44;
-
-    const BACKGROUND_BRIGHT_BLACK = 100;
-
-    const BACKGROUND_BRIGHT_BLUE = 104;
-
-    const BACKGROUND_BRIGHT_CYAN = 106;
-
-    const BACKGROUND_BRIGHT_GREEN = 102;
-
-    const BACKGROUND_BRIGHT_MAGENTA = 105;
-
-    const BACKGROUND_BRIGHT_RED = 101;
-
-    const BACKGROUND_BRIGHT_WHITE = 107;
-
-    const BACKGROUND_BRIGHT_YELLOW = 103;
-
-    const BACKGROUND_CYAN = 46;
-
-    const BACKGROUND_GREEN = 42;
-
-    const BACKGROUND_MAGENTA = 45;
-
-    const BACKGROUND_RED = 41;
-
-    const BACKGROUND_WHITE = 47;
-
-    const BACKGROUND_YELLOW = 43;
-
+    # Some default effects
+    const EFFECT_NORMAL = 0;
     const EFFECT_BOLD = 1;
-
+    const EFFECT_FAINT = 2;
+    const EFFECT_UNDERLINE = 4;
+    const EFFECT_ITALIC = 3;
+    const EFFECT_SLOW_BLINK = 5;
+    const EFFECT_RAPID_BLINK = 6;
+    const EFFECT_REVERSE_VIDEO = 7;
     const EFFECT_CONCEAL = 8;
-
     const EFFECT_CROSSED_OUT = 9;
 
-    const EFFECT_FAINT = 2;
-
-    const EFFECT_ITALIC = 3;
-
-    const EFFECT_NORMAL = 0;
-
-    const EFFECT_RAPID_BLINK = 6;
-
-    const EFFECT_REVERSE_VIDEI = 7;
-
-    const EFFECT_SLOW_BLINK = 5;
-
-    const EFFECT_UNDERLINE = 4;
-
+    // Foreground colors
     const FOREGROUND_BLACK = 30;
-
-    const FOREGROUND_BLUE = 34;
-
-    const FOREGROUND_BRIGHT_BLACK = 90;
-
-    const FOREGROUND_BRIGHT_BLUE = 94;
-
-    const FOREGROUND_BRIGHT_CYAN = 96;
-
-    const FOREGROUND_BRIGHT_GREEN = 92;
-
-    const FOREGROUND_BRIGHT_MAGENTA = 95;
-
-    const FOREGROUND_BRIGHT_RED = 91;
-
-    const FOREGROUND_BRIGHT_WHITE = 97;
-
-    const FOREGROUND_BRIGHT_YELLOW = 93;
-
-    const FOREGROUND_CYAN = 36;
-
-    const FOREGROUND_GREEN = 32;
-
-    const FOREGROUND_MAGENTA = 35;
-
     const FOREGROUND_RED = 31;
-
+    const FOREGROUND_GREEN = 32;
+    const FOREGROUND_YELLOW = 33;
+    const FOREGROUND_BLUE = 34;
+    const FOREGROUND_MAGENTA = 35;
+    const FOREGROUND_CYAN = 36;
     const FOREGROUND_WHITE = 37;
 
-    const FOREGROUND_YELLOW = 33;
+    // Background colors
+    const BACKGROUND_BLACK = 40;
+    const BACKGROUND_RED = 41;
+    const BACKGROUND_GREEN = 42;
+    const BACKGROUND_YELLOW = 43;
+    const BACKGROUND_BLUE = 44;
+    const BACKGROUND_MAGENTA = 45;
+    const BACKGROUND_CYAN = 46;
+    const BACKGROUND_WHITE = 47;
+
+    // Bright foreground colors
+    const FOREGROUND_BRIGHT_BLACK = 90;
+    const FOREGROUND_BRIGHT_RED = 91;
+    const FOREGROUND_BRIGHT_GREEN = 92;
+    const FOREGROUND_BRIGHT_YELLOW = 93;
+    const FOREGROUND_BRIGHT_BLUE = 94;
+    const FOREGROUND_BRIGHT_MAGENTA = 95;
+    const FOREGROUND_BRIGHT_CYAN = 96;
+    const FOREGROUND_BRIGHT_WHITE = 97;
+
+    // Bright background colors
+    const BACKGROUND_BRIGHT_BLACK = 100;
+    const BACKGROUND_BRIGHT_RED = 101;
+    const BACKGROUND_BRIGHT_GREEN = 102;
+    const BACKGROUND_BRIGHT_YELLOW = 103;
+    const BACKGROUND_BRIGHT_BLUE = 104;
+    const BACKGROUND_BRIGHT_MAGENTA = 105;
+    const BACKGROUND_BRIGHT_CYAN = 106;
+    const BACKGROUND_BRIGHT_WHITE = 107;
+
 
     /**
-     * TODO
-     *
-     *
+     * Method to colorize content
+     *     *
      * Usage
      * <pre>
      * // basic case
@@ -142,7 +115,7 @@ class Ansi
             if (is_array($optionalEffects)) {
                 foreach ($optionalEffects as $effect) {
                     if (!is_integer($effect)) {
-                        throw new \Exception(sprintf('All elements of array must be an integers, `%s` given.', gettype($effect)), 1597658704);
+                        throw new Exception(sprintf('All elements of array must be an integers, `%s` given.', gettype($effect)), 1597658704);
                     }
                     $optionalEffects = implode(';', $optionalEffects);
                     return sprintf("\e[%s;%dm%s\e[0m", $optionalEffects, $code, $value);

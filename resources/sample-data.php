@@ -1,7 +1,5 @@
 <?php
-
-// TODO minimize samples to only required
-// TODO add possibility to run samples by $_GET param
+declare(strict_types=1);
 
 // --- SAMPLE DATA to test box drawer
 
@@ -65,7 +63,7 @@ $walterData = [
 
 
 // --- DB sample START: fetch data from Db as an associative array
-$pdo = new PDO('sqlite:sample-data/box-drawer-example-db.sqlite');
+$pdo = new PDO('sqlite:resources/box-drawer-example-db.sqlite');
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 $res = $pdo->query('SELECT * FROM airports');
