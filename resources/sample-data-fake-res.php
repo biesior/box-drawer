@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 return [
     ['uid' => 1, 'name' => 'Foo', 'price' => 19.99],
     ['uid' => 2, 'name' => 'Bar', 'price' => 2999999.99],
