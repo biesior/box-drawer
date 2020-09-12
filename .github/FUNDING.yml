@@ -1,1 +1,4 @@
-custom: ['paypal.me/biesior/4.99EUR', 'paypal.me/wnunez86/4.99USD']
+
+# These are supported funding model platforms
+patreon: biesior
+custom: ['paypal.me/biesior/19.99EUR', 'paypal.me/wnunez86/19.99USD']
